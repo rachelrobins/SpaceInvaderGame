@@ -44,10 +44,7 @@ textRect.center = (playerX+80, playerY+220)
 
 asteroid = [pygame.image.load("asteroid.png"),pygame.image.load("asteroid.png"),pygame.image.load("asteroid.png")
             ,pygame.image.load("asteroid.png"),pygame.image.load("asteroid.png")]
-#asteroid = pygame.image.load("asteroid.png")
-#asteroid = pygame.transform.scale(asteroid, (100, 130))
-#asteroid_posX = random.randint(0, 600)
-#asteroid_posY=0
+
 
 rects=[None] * 5
 
