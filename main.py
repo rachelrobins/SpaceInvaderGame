@@ -1,12 +1,19 @@
 import pygame
 import random
+import sys
 
 pygame.init()
 
-clock_tick_rate=90
+clock_tick_rate=70
 collided =False
 window_width=600
 window_height=900
+
+alien_sizeX=90
+alien_sizeY=110
+
+fire_sizeX=20
+fire_sizeY=20
 
 white = (255, 255, 255)
 green = (0, 255, 0)
@@ -45,7 +52,6 @@ textRect.center = (playerX+80, playerY+220)
 asteroid = [pygame.image.load("asteroid.png"),pygame.image.load("asteroid.png"),pygame.image.load("asteroid.png")
             ,pygame.image.load("asteroid.png"),pygame.image.load("asteroid.png")]
 
-
 rects=[None] * 5
 
 rects[0]=pygame.Rect(0,0,100,130)
@@ -64,9 +70,46 @@ for i in range (0,5):
 for i in range (0,asteroid_init-1):
     asteroid_posX[i] = random.randint(0, 600)
     asteroid_posY[i] = 0
-init = True
-Game_Over= False
 
+alien = [pygame.image.load("alien.png"),pygame.image.load("alien.png"),pygame.image.load("alien.png")
+            ,pygame.image.load("alien.png"),pygame.image.load("alien.png")]
+active_alien=0
+for i in range (0,5):
+    alien[i] = pygame.transform.scale(alien[i], (alien_sizeX, alien_sizeY))
+
+alien_rect=[None] * 5
+
+alien_rect[0]=pygame.Rect(0,0,alien_sizeX,alien_sizeY)
+alien_rect[1]=pygame.Rect(0,0,alien_sizeX,alien_sizeY)
+alien_rect[2]=pygame.Rect(0,0,alien_sizeX,alien_sizeY)
+alien_rect[3]=pygame.Rect(0,0,alien_sizeX,alien_sizeY)
+alien_rect[4]=pygame.Rect(0,0,alien_sizeX,alien_sizeY)
+
+fire_ball = [pygame.image.load("fire.png"),pygame.image.load("fire.png"),pygame.image.load("fire.png")
+            ,pygame.image.load("fire.png"),pygame.image.load("fire.png"), pygame.image.load("fire.png"),pygame.image.load("fire.png"),pygame.image.load("fire.png")
+            ,pygame.image.load("fire.png"),pygame.image.load("fire.png")]
+
+for i in range (0,10):
+    fire_ball[i] = pygame.transform.scale(fire_ball[i], (fire_sizeX, fire_sizeY) )
+
+fire_rect=[None]* 10
+for i in range(0,10):
+    fire_rect[i] = pygame.Rect(0,0,fire_sizeX,fire_sizeY)
+
+fire_sound = pygame.mixer.Sound("fire_audio.wav")
+init = True
+alien_fall=False
+Game_Over= False
+counter=0
+shoot=False
+last_ball_shot=0;
+balls_in_the_air=0
+exploded = [False] *10
+
+def shoot_on():
+
+    pygame.mixer.Sound.play(fire_sound)
+    pygame.mixer.music.stop()
 
 def redrawWindow():
     if Game_Over==False:
@@ -86,7 +129,11 @@ def redrawWindow():
                 screen.blit(asteroid[i], (asteroid_posX[i], asteroid_posY[i]))
                 rects[i].x = asteroid_posX[i]
                 rects[i].y = asteroid_posY[i]
+        if (alien_fall==True) :
+            screen.blit(alien[active_alien], (alien_rect[active_alien].x, alien_rect[active_alien].y))
 
+        if (shoot==True) :
+            screen.blit(fire_ball[0], (fire_rect[0].x,fire_rect[0].y))
         pygame.display.update()  # updates the screen
 
 
@@ -151,6 +198,23 @@ while running:
         for i in asteroid_active:
             asteroid_posY[i] += 7
 
+    if (alien_fall == True):
+        alien_rect[active_alien].y += 5
+    if (alien_rect[active_alien].y > 750):
+        alien_fall = False
+        active_alien = (active_alien + 1) % 5
+
+    if(len(asteroid_active)>2 and alien_fall == False):
+        alien_fall = True
+        alien_rect[active_alien].x = random.randint(100, 400)
+        alien_rect[active_alien].y = 0
+
+    if (shoot == True):
+        fire_rect[0].y -= 10
+        if (fire_rect[0]. colliderect( alien_rect[active_alien])):
+            alien[active_alien].fill((0,0,0,0))
+
+
 
     keys = pygame.key.get_pressed()
 
@@ -163,10 +227,21 @@ while running:
     if keys[pygame.K_UP] and (playerY-5)>-60:
         playerY -= 7
 
-    if keys[pygame.K_DOWN] and (playerY-5)<690:
+    if keys[pygame.K_DOWN] and (playerY-5)<780:
         playerY += 7
+
+    if keys[pygame.K_SPACE]:
+        shoot=True
+        shoot_on()
+        balls_in_the_air =  balls_in_the_air + 1
+        fire_rect[last_ball_shot].x= player_rect.x + 25
+        fire_rect[last_ball_shot].y = player_rect.y - 20
+        last_ball_shot = (last_ball_shot+1)%10
+
+
 
     #screen.blit(background_image, [0, 0])
 
     #pygame.display.flip()
+    counter += 1
     clock.tick(clock_tick_rate)
