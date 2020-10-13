@@ -245,7 +245,7 @@ while running:
             shot_alien[active_alien] = True
 
     keys = pygame.key.get_pressed()
-
+    control()
 
     # screen.blit(background_image, [0, 0])
 
