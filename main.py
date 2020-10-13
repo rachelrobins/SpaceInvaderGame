@@ -144,6 +144,42 @@ def redrawWindow():
         screen.blit(text, textRect)
 
     pygame.display.update()
+    
+def control():
+    global  playerX
+    global  playerY
+    global balls_in_the_air
+    global last_ball_shot
+    
+    if keys[pygame.K_LEFT] and (playerX - 5) > 0:
+        playerX = playerX - 11
+
+    if keys[pygame.K_RIGHT] and (playerX + 5) < 465:
+        playerX += 11
+
+    if keys[pygame.K_UP] and (playerY - 5) > -60:
+        playerY -= 11
+
+    if keys[pygame.K_DOWN] and (playerY - 5) < 780:
+        playerY += 11
+
+    if keys[pygame.K_SPACE]:
+        shoot = True
+        shoot_on()
+        balls_in_the_air = balls_in_the_air + 1
+        fire_rect[last_ball_shot].x = player_rect.x + 25
+        fire_rect[last_ball_shot].y = player_rect.y - 20
+        last_ball_shot = (last_ball_shot + 1) % 10
+
+    if keys[pygame.K_a]:
+        Game_Over = False
+        screen.blit(bg, [0, 0])
+        playerX = 225
+        playerY = 650
+        screen.blit(player, (225, 650))
+        pygame.display.update()
+    
+    
 
 
 while running:
@@ -210,33 +246,6 @@ while running:
 
     keys = pygame.key.get_pressed()
 
-    if keys[pygame.K_LEFT] and (playerX - 5) > 0:
-        playerX = playerX - 11
-
-    if keys[pygame.K_RIGHT] and (playerX + 5) < 465:
-        playerX += 11
-
-    if keys[pygame.K_UP] and (playerY - 5) > -60:
-        playerY -= 11
-
-    if keys[pygame.K_DOWN] and (playerY - 5) < 780:
-        playerY += 11
-
-    if keys[pygame.K_SPACE]:
-        shoot = True
-        shoot_on()
-        balls_in_the_air = balls_in_the_air + 1
-        fire_rect[last_ball_shot].x = player_rect.x + 25
-        fire_rect[last_ball_shot].y = player_rect.y - 20
-        last_ball_shot = (last_ball_shot + 1) % 10
-
-    if keys[pygame.K_a]:
-        Game_Over = False
-        screen.blit(bg, [0, 0])
-        playerX = 225
-        playerY = 650
-        screen.blit(player, (225, 650))
-        pygame.display.update()
 
     # screen.blit(background_image, [0, 0])
 
